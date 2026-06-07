@@ -46,7 +46,7 @@ export default function Login() {
       if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         setError('Invalid email or password.');
       } else {
-        setError('Failed to log in. Please try again.');
+        setError(`Failed to log in: ${err.message || 'Please try again.'}`);
       }
     } finally {
       setLoading(false);

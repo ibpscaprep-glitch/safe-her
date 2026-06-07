@@ -57,7 +57,7 @@ export default function Register() {
       } else if (err.code === 'auth/invalid-email') {
         setError('Please enter a valid email address.');
       } else {
-        setError('Failed to create account. Please try again.');
+        setError(`Failed to create account: ${err.message || 'Please try again.'}`);
       }
     } finally {
       setLoading(false);
