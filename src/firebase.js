@@ -27,13 +27,13 @@ import {
 
 // Web app's Firebase configuration hardcoded for easy Vercel deployment
 const firebaseConfig = {
-  apiKey: "AIzaSyAdENgUCX-WZZTHAIc2vvqLZt3xiVUMcAk",
-  authDomain: "safe-her-d5e38.firebaseapp.com",
-  projectId: "safe-her-d5e38",
-  storageBucket: "safe-her-d5e38.firebasestorage.app",
-  messagingSenderId: "1036927107488",
-  appId: "1:1036927107488:web:73a74884281059acd6e4c5",
-  measurementId: "G-T8BGSZMNK7"
+  apiKey: "AIzaSyCgHe2QH0x9_Ycfpl5UTTDByTa5Ntw5HEo",
+  authDomain: "safe-her-85d85.firebaseapp.com",
+  projectId: "safe-her-85d85",
+  storageBucket: "safe-her-85d85.firebasestorage.app",
+  messagingSenderId: "1017905368531",
+  appId: "1:1017905368531:web:cc2cbb12d115a6cdb53326",
+  measurementId: "G-Y3T1X90WDJ"
 };
 
 // Initialize Firebase
