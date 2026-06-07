@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-gradient-to-tr from-safety-purple-50 via-white to-safety-pink-50 text-slate-800 min-h-screen antialiased selection:bg-safety-purple-200 selection:text-safety-purple-900;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* Custom styles for premium aesthetic */
+.glass-panel {
+  @apply bg-white/80 backdrop-blur-lg border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl;
+}
+
+.glass-panel-dark {
+  @apply bg-slate-900/90 backdrop-blur-lg border border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-2xl;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-safety-purple-700 via-purple-600 to-safety-pink-500;
+}
+
+.gradient-btn {
+  @apply bg-gradient-to-r from-safety-purple-700 via-purple-600 to-safety-pink-500 hover:from-safety-purple-800 hover:to-safety-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg active:scale-[0.98];
+}
+
+.sos-button-glow {
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  animation: sos-pulse 2s infinite;
+}
+
+@keyframes sos-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
