@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AlertOctagon, MapPin, Send, RotateCcw, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { AlertOctagon, MapPin, Send, RotateCcw, AlertTriangle, CheckCircle, MessageSquare } from 'lucide-react';
 
 export default function SOSButton({ contacts, onSOSTriggered }) {
   const [isLocating, setIsLocating] = useState(false);
@@ -88,6 +88,32 @@ export default function SOSButton({ contacts, onSOSTriggered }) {
     return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
   };
 
+  // Generate SMS link for all contacts
+  const getSMSAllLink = () => {
+    if (!currentLocation || contacts.length === 0) return '#';
+    const phoneNumbers = contacts.map(c => c.phoneNumber).join(',');
+    const message = `🚨 SOS ALERT 🚨\n\nI need help.\n\nMy live location:\n${currentLocation.mapsLink}\n\nPlease contact me immediately.`;
+    
+    const ua = navigator.userAgent.toLowerCase();
+    const isiOS = /ipad|iphone|ipod/.test(ua) && !window.MSStream;
+    const separator = isiOS ? ';' : '?';
+    
+    return `sms:${phoneNumbers}${separator}body=${encodeURIComponent(message)}`;
+  };
+
+  // Generate SMS link for safe confirmation message to all contacts
+  const getSafeSMSAllLink = () => {
+    if (contacts.length === 0) return '#';
+    const phoneNumbers = contacts.map(c => c.phoneNumber).join(',');
+    const message = `🟢 SAFE UPDATE 🟢\n\nI am safe now. The emergency alert has been stood down. Thank you for checking in on me!`;
+    
+    const ua = navigator.userAgent.toLowerCase();
+    const isiOS = /ipad|iphone|ipod/.test(ua) && !window.MSStream;
+    const separator = isiOS ? ';' : '?';
+    
+    return `sms:${phoneNumbers}${separator}body=${encodeURIComponent(message)}`;
+  };
+
   return (
     <div className="glass-panel p-6 border border-white/60 flex flex-col items-center justify-center relative overflow-hidden">
       
@@ -159,6 +185,18 @@ export default function SOSButton({ contacts, onSOSTriggered }) {
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider text-left">
               Send Safety Updates:
             </p>
+            <a
+              href={getSafeSMSAllLink()}
+              className="w-full py-3 px-4 rounded-xl text-sm font-bold bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white flex items-center justify-between shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+            >
+              <span className="flex items-center space-x-2">
+                <MessageSquare className="h-4.5 w-4.5 shrink-0" />
+                <span>Send "I'm Safe" SMS to All Contacts</span>
+              </span>
+              <span className="text-[10px] uppercase font-black bg-white/20 px-2.5 py-0.5 rounded">
+                SMS (ALL)
+              </span>
+            </a>
             {contacts.map((contact) => (
               <a
                 key={contact.id}
@@ -210,6 +248,18 @@ export default function SOSButton({ contacts, onSOSTriggered }) {
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Send Emergency Dispatches:
             </p>
+            <a
+              href={getSMSAllLink()}
+              className="w-full py-3 px-4 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex items-center justify-between shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+            >
+              <span className="flex items-center space-x-2">
+                <MessageSquare className="h-4.5 w-4.5 shrink-0 animate-pulse" />
+                <span>Send SMS SOS to All Contacts</span>
+              </span>
+              <span className="text-[10px] uppercase font-black bg-white/20 px-2.5 py-0.5 rounded">
+                SMS (ALL)
+              </span>
+            </a>
             {contacts.map((contact) => (
               <a
                 key={contact.id}

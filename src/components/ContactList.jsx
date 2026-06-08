@@ -44,7 +44,7 @@ export default function ContactList({ contacts, onAddClick, onEditClick, onDelet
           </div>
           <p className="text-sm font-semibold text-slate-600">No emergency contacts added yet</p>
           <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-            You must add at least one contact to send WhatsApp SOS alerts with your live location.
+            You must add at least one contact to send SMS/WhatsApp SOS alerts with your live location.
           </p>
           <button
             onClick={onAddClick}
