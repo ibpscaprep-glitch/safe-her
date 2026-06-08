@@ -26,7 +26,9 @@ import {
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgHe2QH0x9_Ycfpl5UTTDByTa5Ntw5HEo",
-  authDomain: "safe-her-85d85.firebaseapp.com",
+  authDomain: typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    ? window.location.hostname
+    : "safe-her-85d85.firebaseapp.com",
   projectId: "safe-her-85d85",
   storageBucket: "safe-her-85d85.firebasestorage.app",
   messagingSenderId: "1017905368531",
