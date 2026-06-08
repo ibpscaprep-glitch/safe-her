@@ -16,16 +16,22 @@ export default function Login() {
   }
 
   async function handleGoogleSignIn() {
+    let result;
     try {
       setError('');
       setLoading(true);
-      await loginWithGoogle();
-      navigate('/dashboard');
+      result = await loginWithGoogle();
+      if (result && !result.redirected) {
+        navigate('/dashboard');
+      }
     } catch (err) {
       console.error(err);
       setError('Failed to sign in with Google. Please try again.');
-    } finally {
       setLoading(false);
+    } finally {
+      if (!result || !result.redirected) {
+        setLoading(false);
+      }
     }
   }
 

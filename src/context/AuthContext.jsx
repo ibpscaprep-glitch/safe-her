@@ -62,7 +62,8 @@ export function AuthProvider({ children }) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
     if (isMobile) {
-      return signInWithRedirect(auth, provider);
+      await signInWithRedirect(auth, provider);
+      return { redirected: true };
     } else {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -82,7 +83,7 @@ export function AuthProvider({ children }) {
       } else {
         setUserProfile(docSnap.data());
       }
-      return user;
+      return { redirected: false, user };
     }
   }
 
@@ -93,10 +94,14 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    // Process redirect result if redirected back from Google Sign-In
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
+    let unsubscribeAuthState = null;
+    let isMounted = true;
+
+    async function initializeAuth() {
+      try {
+        // 1. Process redirect result first
+        const result = await getRedirectResult(auth);
+        if (result?.user && isMounted) {
           const user = result.user;
           const userDocRef = doc(db, 'users', user.uid);
           const docSnap = await getDoc(userDocRef);
@@ -114,45 +119,56 @@ export function AuthProvider({ children }) {
             setUserProfile(docSnap.data());
           }
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error handling Google redirect result:", error);
-      });
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      if (user) {
-        // Fetch profile details from Firestore
-        try {
-          const userDocRef = doc(db, 'users', user.uid);
-          const docSnap = await getDoc(userDocRef);
-          if (docSnap.exists()) {
-            setUserProfile(docSnap.data());
-          } else {
-            // Backup profile if firestore doc does not exist
-            const fallbackProfile = {
-              uid: user.uid,
-              name: user.displayName || 'User',
-              email: user.email,
-              createdAt: new Date().toISOString()
-            };
-            setUserProfile(fallbackProfile);
-          }
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-          setUserProfile({
-            uid: user.uid,
-            name: user.displayName || 'User',
-            email: user.email,
-          });
-        }
-      } else {
-        setUserProfile(null);
       }
-      setLoading(false);
-    });
 
-    return unsubscribe;
+      // 2. Subscribe to auth state changes
+      if (isMounted) {
+        unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
+          if (!isMounted) return;
+          setCurrentUser(user);
+          if (user) {
+            // Fetch profile details from Firestore
+            try {
+              const userDocRef = doc(db, 'users', user.uid);
+              const docSnap = await getDoc(userDocRef);
+              if (docSnap.exists()) {
+                setUserProfile(docSnap.data());
+              } else {
+                // Backup profile if firestore doc does not exist
+                const fallbackProfile = {
+                  uid: user.uid,
+                  name: user.displayName || 'User',
+                  email: user.email,
+                  createdAt: new Date().toISOString()
+                };
+                setUserProfile(fallbackProfile);
+              }
+            } catch (error) {
+              console.error("Error fetching user profile:", error);
+              setUserProfile({
+                uid: user.uid,
+                name: user.displayName || 'User',
+                email: user.email,
+              });
+            }
+          } else {
+            setUserProfile(null);
+          }
+          setLoading(false);
+        });
+      }
+    }
+
+    initializeAuth();
+
+    return () => {
+      isMounted = false;
+      if (unsubscribeAuthState) {
+        unsubscribeAuthState();
+      }
+    };
   }, []);
 
   const value = {
@@ -167,7 +183,21 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-tr from-safety-purple-50 via-white to-safety-pink-50">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-safety-purple-100 animate-pulse"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-safety-purple-700 border-r-safety-pink-500 animate-spin"></div>
+            </div>
+            <p className="text-slate-500 font-semibold tracking-wide text-sm animate-pulse">
+              Initializing...
+            </p>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }
